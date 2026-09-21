@@ -71,7 +71,7 @@ class ChangeEchoTask(BaseWWTask, FindFeature):
 
             self.wait_ocr(match='声骸强化', raise_if_not_found=True)
             self.sleep(0.5)
-            current_main = self.wait_ocr(0.09, 0.20, 0.15, 0.26)
+            current_main = self.wait_ocr(0.09, 0.21, 0.36, 0.28)
             if not current_main:
                 raise Exception('找不到当前主属性!')
             if target_main in current_main[0].name:
