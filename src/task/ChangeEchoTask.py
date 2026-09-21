@@ -27,7 +27,11 @@ class ChangeEchoTask(BaseWWTask, FindFeature):
              '主属性行射伤害加成': '主属性衍射伤害加成'})
         self.default_config.update({
             '目标属性': '攻击',
+            'Exit After Task': False,
         })
+        self.config_description = {
+            'Exit After Task': '勾选后, 所有符合条件的声骸修改完成时会自动退出游戏和ok-ww',
+        }
         self.config_type["目标属性"] = {'type': "drop_down",
                                         'options': ['攻击', '暴击伤害', '暴击', '生命', '防御',
                                                     '共鸣效率', "冷凝伤害加成",
@@ -43,9 +47,14 @@ class ChangeEchoTask(BaseWWTask, FindFeature):
 
     def run(self):
         self.info_set('成功声骸数量', 0)
+        converted = 0
         while True:
             enhance = self.find_echo_enhance()
             if not enhance:
+                if converted > 0:
+                    # 列表里的声骸全部修改完毕, 正常结束(勾选了 Exit After Task 时会自动退出游戏和ok-ww)
+                    self.log_info(f'所有符合条件的声骸已修改完成, 共{converted}个, 任务结束!', notify=True)
+                    return
                 raise Exception('必须在背包声骸界面过滤后开始!')
             current_level = self.is_0_level()
             if not current_level:
@@ -88,6 +97,7 @@ class ChangeEchoTask(BaseWWTask, FindFeature):
             self.wait_ocr(match='获得声骸', raise_if_not_found=True)
             self.esc()
             self.info_incr('成功声骸数量')
+            converted += 1
 
     def esc(self):
         start = time.time()
